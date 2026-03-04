@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Code2,
-  Cpu,
   Brain,
   Sparkles,
   Mail,
   Github,
   Linkedin,
-  Terminal,
   Layers,
   Zap,
-  BookOpen
+  BookOpen,
+  Globe,
+  MessageSquare,
+  FileText,
+  Briefcase,
+  GraduationCap
 } from 'lucide-react';
 import { Section, ProjectCard, ThemeToggle, CustomCursor, StoryReveal, CinematicBackground } from './components';
 import './App.css';
@@ -53,8 +56,19 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            A developer who learned by building — breaking things, fixing them, and doing it again until it worked.
+            Software Engineer specializing in full-stack JavaScript systems, API integrations, and AI-assisted tooling. Building scalable web platforms with a focus on clean architecture.
           </motion.p>
+
+          <motion.div
+            className="skill-pills"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            {['TypeScript', 'React', 'Node.js', 'Next.js', 'Python', 'MongoDB'].map(skill => (
+              <span key={skill} className="skill-pill">{skill}</span>
+            ))}
+          </motion.div>
         </div>
 
         <motion.div
@@ -68,36 +82,88 @@ function App() {
       </header>
 
       <main className="container">
-        <Section title="What I’m Building Now" delay={0.1}>
-          <p>
-            Today, my focus has moved even closer to the fundamentals. I'm currently working on several projects that challenge my understanding of how software works at its core:
-          </p>
+
+        {/* Experience */}
+        <Section title="Experience" delay={0.1}>
+          <div className="experience-list">
+            <div className="glass experience-card">
+              <div className="experience-header">
+                <div>
+                  <h3>SDK Developer</h3>
+                  <p className="mono-label">La Tanda — Fintech Platform · 2025 – Present</p>
+                </div>
+                <Briefcase size={20} style={{ color: 'var(--accent-primary)', opacity: 0.7 }} />
+              </div>
+              <ul>
+                <li>Contributing to production-grade TypeScript SDK aligned with 67+ verified API endpoints.</li>
+                <li>Ensuring endpoint accuracy through Swagger validation and structured testing workflows.</li>
+                <li>Designed modular HttpClient architecture with centralized error handling.</li>
+              </ul>
+            </div>
+
+            <div className="glass experience-card">
+              <div className="experience-header">
+                <div>
+                  <h3>Frontend Developer Intern</h3>
+                  <p className="mono-label">Unified Mentor · Sep 2025 – Dec 2025</p>
+                </div>
+                <Briefcase size={20} style={{ color: 'var(--accent-primary)', opacity: 0.7 }} />
+              </div>
+              <ul>
+                <li>Developed modular and reusable UI components using modern JavaScript practices.</li>
+                <li>Resolved complex state-related issues improving UI consistency and responsiveness.</li>
+                <li>Worked within structured Git workflows including pull requests and code reviews.</li>
+              </ul>
+            </div>
+
+            <div className="glass experience-card">
+              <div className="experience-header">
+                <div>
+                  <h3>RustChain Installer Contributor</h3>
+                  <p className="mono-label">Open Source · 2026</p>
+                </div>
+                <Globe size={20} style={{ color: 'var(--accent-primary)', opacity: 0.7 }} />
+              </div>
+              <ul>
+                <li>Built cross-platform installer (macOS & Linux) with wallet configuration and checksum validation.</li>
+                <li>Integrated system-level automation using systemd and launchd.</li>
+                <li>Pull request merged into main branch; awarded project bounty.</li>
+              </ul>
+            </div>
+          </div>
+        </Section>
+
+        {/* Projects */}
+        <Section title="Selected Projects" delay={0.1}>
           <div className="projects-grid">
             <ProjectCard
-              title="Custom DSL"
-              description="Exploring language design and compiler basics to create a domain-specific language for specific automation tasks."
-              tags={['TypeScript', 'Compilers', 'AST']}
-              icon={<Terminal size={24} />}
+              title="FreelancerFlow"
+              description="Full-stack platform for freelance project tracking and invoicing. Modular backend architecture with structured REST APIs and validation middleware."
+              tags={['React', 'Node.js', 'MongoDB', 'Tailwind CSS']}
+              icon={<Layers size={24} />}
               delay={0.2}
               githubUrl="https://github.com/Rajkoli145"
             />
             <ProjectCard
-              title="Neural Network Framework"
-              description="Building a framework from scratch (no high-level libraries) to deeply understand the mathematics and logic behind machine learning."
-              tags={['Math', 'Algorithms', 'Logic']}
-              icon={<Cpu size={24} />}
+              title="Cross-Lingo Talk"
+              description="Real-time WebSocket chat system with multilingual translation integration. Features OTP-based authentication and secure session handling."
+              tags={['React', 'Express', 'MongoDB', 'Socket.io']}
+              icon={<MessageSquare size={24} />}
               delay={0.3}
+              githubUrl="https://github.com/Rajkoli145"
             />
             <ProjectCard
-              title="AI Experimentation"
-              description="Practical applications of LLMs and agentic workflows to solve real-world problems."
-              tags={['LLMs', 'Agents', 'Python']}
+              title="EduStory"
+              description="AI-powered storytelling engine with structured prompt pipelines. Integrated authentication and persistent storage using NextAuth."
+              tags={['Next.js', 'MongoDB', 'AI', 'NextAuth']}
               icon={<Brain size={24} />}
               delay={0.4}
+              githubUrl="https://github.com/Rajkoli145"
             />
           </div>
         </Section>
 
+        {/* Story Teaser */}
         <Section delay={0.2}>
           <div className="glass story-teaser" onClick={() => setIsStoryOpen(true)}>
             <div className="story-teaser-content">
@@ -113,6 +179,7 @@ function App() {
           </div>
         </Section>
 
+        {/* Philosophy */}
         <Section title="Philosophy" delay={0.2}>
           <p>
             I believe that code is a notebook for thought. Every repository represents something I learned through struggle. My philosophy is simple:
@@ -130,28 +197,33 @@ function App() {
           </ul>
         </Section>
 
-        <Section title="Influence & Beyond" delay={0.2}>
+        {/* Education & Certifications */}
+        <Section title="Education" delay={0.2}>
           <div className="grid-split">
             <div>
-              <h3>Books & Learning</h3>
-              <p>
-                My thinking has been shaped by more than just documentation. I find deep inspiration in books that explore systems, logic, and the human side of engineering.
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <GraduationCap size={20} style={{ color: 'var(--accent-primary)' }} />
+                <h3 style={{ marginBottom: 0 }}>BTech in Computer Science</h3>
+              </div>
+              <p className="mono-label" style={{ marginBottom: '0.5rem' }}>ITM Skills University · 2024 – 2028</p>
+              <p>12th (PCMB) — 80%</p>
             </div>
             <div>
-              <h3>Balance</h3>
-              <p>
-                I find balance in personal growth, music, and the discipline required to master any craft. These pursuits outside of tech inform my approach to development.
-              </p>
+              <h3>Certifications</h3>
+              <ul>
+                <li>Postman API Fundamentals — Student Expert</li>
+                <li>GenAI 101 with Pieces</li>
+              </ul>
             </div>
           </div>
         </Section>
 
+        {/* Connect */}
         <Section title="Connect" delay={0.2} id="contact">
           <div className="glass contact-card">
-            <p>If you’re reading this, you’re already part of the journey. I’m always open to discussing systems, code, or anything in between.</p>
+            <p>I'm always open to discussing systems, code, or anything in between. Let's connect.</p>
             <div className="contact-links">
-              <a href="mailto:your-email@example.com" className="contact-link">
+              <a href="mailto:koliraj911@gmail.com" className="contact-link">
                 <Mail size={20} />
                 <span>Email</span>
               </a>
@@ -162,6 +234,10 @@ function App() {
               <a href="https://www.linkedin.com/in/raj-koli-626008318/" target="_blank" rel="noopener noreferrer" className="contact-link">
                 <Linkedin size={20} />
                 <span>LinkedIn</span>
+              </a>
+              <a href="/Rajkoli_CV.pdf" target="_blank" rel="noopener noreferrer" className="contact-link">
+                <FileText size={20} />
+                <span>Resume</span>
               </a>
             </div>
           </div>
