@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useSpring } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { ExternalLink, Github } from 'lucide-react';
 
@@ -21,8 +21,6 @@ export const ProjectCard = ({
     icon,
     delay = 0
 }: ProjectCardProps) => {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
     const rotateX = useSpring(0, { stiffness: 150, damping: 20 });
     const rotateY = useSpring(0, { stiffness: 150, damping: 20 });
 
