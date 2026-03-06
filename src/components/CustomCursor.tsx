@@ -1,93 +1,171 @@
-import { useEffect, useState } from 'react';
-import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { useEffect, useRef, useCallback } from 'react';
 
+/**
+ * Ultra-smooth custom cursor using pure requestAnimationFrame + lerp.
+ * No Framer Motion springs — direct DOM manipulation for 60fps.
+ */
 export const CustomCursor = () => {
-    const [isHovering, setIsHovering] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+    const outerRef = useRef<HTMLDivElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
+    const spotlightRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
+    // Track raw mouse position
+    const mouse = useRef({ x: -100, y: -100 });
+    // Smoothed positions for trailing elements
+    const outerPos = useRef({ x: -100, y: -100 });
+    const spotlightPos = useRef({ x: -100, y: -100 });
+    const isHovering = useRef(false);
+    const rafId = useRef<number>(0);
 
-    // Smooth springs for trailing effect
-    const springConfig = { damping: 25, stiffness: 250 };
-    const cursorX = useSpring(mouseX, springConfig);
-    const cursorY = useSpring(mouseY, springConfig);
+    // Lerp utility — pure math, no library
+    const lerp = useCallback((start: number, end: number, factor: number) => {
+        return start + (end - start) * factor;
+    }, []);
 
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            mouseX.set(e.clientX);
-            mouseY.set(e.clientY);
-            if (!isVisible) setIsVisible(true);
+        // Touch device — bail out
+        if ('ontouchstart' in window) return;
+
+        const outer = outerRef.current;
+        const inner = innerRef.current;
+        const spotlight = spotlightRef.current;
+        const container = containerRef.current;
+        if (!outer || !inner || !spotlight || !container) return;
+
+        // ---- EVENT HANDLERS (passive for perf) ----
+        const onMouseMove = (e: MouseEvent) => {
+            mouse.current.x = e.clientX;
+            mouse.current.y = e.clientY;
+            container.style.opacity = '1';
         };
 
-        const handleMouseOver = (e: MouseEvent) => {
+        const onMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            const isInteractive =
+            const interactive =
                 target.closest('a') ||
                 target.closest('button') ||
                 target.closest('.project-card') ||
-                target.tagName.toLowerCase() === 'input' ||
-                target.tagName.toLowerCase() === 'textarea';
+                target.closest('.skill-pill') ||
+                target.closest('.contact-link') ||
+                target.closest('.hero-social-link') ||
+                target.closest('svg') ||
+                target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA';
 
-            setIsHovering(!!isInteractive);
+            const nowHovering = !!interactive;
+            if (nowHovering !== isHovering.current) {
+                isHovering.current = nowHovering;
+                if (nowHovering) {
+                    outer.style.width = '42px';
+                    outer.style.height = '42px';
+                    outer.style.boxShadow = '0 0 16px rgba(143, 168, 255, 0.4)';
+                    outer.style.backgroundColor = 'rgba(143, 168, 255, 0.04)';
+                    outer.style.opacity = '0.8';
+                } else {
+                    outer.style.width = '32px';
+                    outer.style.height = '32px';
+                    outer.style.boxShadow = 'none';
+                    outer.style.backgroundColor = 'transparent';
+                    outer.style.opacity = '0.5';
+                }
+            }
         };
 
-        const handleMouseLeave = () => setIsVisible(false);
-        const handleMouseEnter = () => setIsVisible(true);
+        const onMouseLeave = () => {
+            container.style.opacity = '0';
+        };
+        const onMouseEnter = () => {
+            container.style.opacity = '1';
+        };
 
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseover', handleMouseOver);
-        document.addEventListener('mouseleave', handleMouseLeave);
-        document.addEventListener('mouseenter', handleMouseEnter);
+        // ---- ANIMATION LOOP ----
+        const animate = () => {
+            const mx = mouse.current.x;
+            const my = mouse.current.y;
+
+            // Inner dot — direct position, zero lag
+            const scale = isHovering.current ? 0.5 : 1;
+            inner.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%) scale(${scale})`;
+
+            // Outer ring — smooth trail (lerp factor 0.15 = ~6 frames to catch up)
+            outerPos.current.x = lerp(outerPos.current.x, mx, 0.15);
+            outerPos.current.y = lerp(outerPos.current.y, my, 0.15);
+            outer.style.transform = `translate3d(${outerPos.current.x}px, ${outerPos.current.y}px, 0) translate(-50%, -50%)`;
+
+            // Spotlight — "Flashlight" effect (dark overlay with transparent hole)
+            // Only active in dark mode to keep light mode clean
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+            if (isDark) {
+                spotlightPos.current.x = lerp(spotlightPos.current.x, mx, 0.08);
+                spotlightPos.current.y = lerp(spotlightPos.current.y, my, 0.08);
+
+                const radius = isHovering.current ? 400 : 350;
+                const darkness = 0.8; // How dark the rest of the screen is
+
+                spotlight.style.background = `radial-gradient(
+                    ${radius}px circle at ${spotlightPos.current.x}px ${spotlightPos.current.y}px,
+                    transparent 0%,
+                    transparent 40%,
+                    rgba(0, 0, 0, ${darkness}) 70%
+                )`;
+            } else {
+                spotlight.style.background = 'none';
+            }
+
+            rafId.current = requestAnimationFrame(animate);
+        };
+
+        // Start the loop
+        rafId.current = requestAnimationFrame(animate);
+
+        // Attach listeners
+        window.addEventListener('mousemove', onMouseMove, { passive: true });
+        window.addEventListener('mouseover', onMouseOver, { passive: true });
+        document.addEventListener('mouseleave', onMouseLeave);
+        document.addEventListener('mouseenter', onMouseEnter);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseover', handleMouseOver);
-            document.removeEventListener('mouseleave', handleMouseLeave);
-            document.removeEventListener('mouseenter', handleMouseEnter);
+            cancelAnimationFrame(rafId.current);
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseover', onMouseOver);
+            document.removeEventListener('mouseleave', onMouseLeave);
+            document.removeEventListener('mouseenter', onMouseEnter);
         };
-    }, [mouseX, mouseY, isVisible]);
+    }, [lerp]);
 
+    // Don't render on touch devices
     if (typeof window !== 'undefined' && 'ontouchstart' in window) return null;
 
     return (
         <div
+            ref={containerRef}
             className="custom-cursor-container"
-            style={{
-                opacity: isVisible ? 1 : 0,
-                pointerEvents: 'none'
-            }}
+            style={{ opacity: 0, pointerEvents: 'none' }}
         >
-            {/* Outer Spring Circle */}
-            <motion.div
+            {/* Spotlight ambient glow */}
+            <div ref={spotlightRef} className="cursor-spotlight" />
+
+            {/* Outer trailing ring */}
+            <div
+                ref={outerRef}
                 className="cursor-outer"
                 style={{
-                    x: cursorX,
-                    y: cursorY,
-                    translateX: '-50%',
-                    translateY: '-50%',
+                    width: 32,
+                    height: 32,
+                    opacity: 0.5,
                 }}
-                animate={{
-                    width: isHovering ? 60 : 32,
-                    height: isHovering ? 60 : 32,
-                    backgroundColor: isHovering ? 'var(--accent-soft)' : 'transparent',
-                    borderColor: isHovering ? 'var(--accent-primary)' : 'var(--accent-primary)',
-                    opacity: isHovering ? 0.3 : 0.5,
-                }}
-                transition={{ type: 'spring', stiffness: 250, damping: 25 }}
             />
 
-            {/* Center Fixed Dot */}
-            <motion.div
+            {/* Inner dot — zero lag */}
+            <div
+                ref={innerRef}
                 className="cursor-inner"
                 style={{
-                    x: mouseX,
-                    y: mouseY,
-                    translateX: '-50%',
-                    translateY: '-50%',
-                }}
-                animate={{
-                    scale: isHovering ? 0.5 : 1,
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
                 }}
             />
         </div>

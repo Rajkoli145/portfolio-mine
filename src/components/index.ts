@@ -5,3 +5,4 @@ export * from './CustomCursor';
 export * from './StoryReveal';
 export * from './NeuralSphere';
 export * from './CinematicBackground';
+export * from './Navbar';

@@ -16,8 +16,32 @@ import {
   Briefcase,
   GraduationCap
 } from 'lucide-react';
-import { Section, ProjectCard, ThemeToggle, CustomCursor, StoryReveal, CinematicBackground } from './components';
+import { Section, ProjectCard, CustomCursor, StoryReveal, CinematicBackground, Navbar } from './components';
 import './App.css';
+
+/* Character-by-character reveal helper */
+const charVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const },
+  },
+};
+
+const AnimatedName = ({ text }: { text: string }) => (
+  <>
+    {text.split('').map((char, i) => (
+      <motion.span
+        key={`${char}-${i}`}
+        variants={charVariants}
+        style={{ display: 'inline-block' }}
+      >
+        {char}
+      </motion.span>
+    ))}
+  </>
+);
 
 function App() {
   const [isStoryOpen, setIsStoryOpen] = useState(false);
@@ -25,62 +49,128 @@ function App() {
   return (
     <div className={`app-container ${isStoryOpen ? 'story-active' : ''}`}>
       <CinematicBackground />
+      <Navbar />
       <CustomCursor />
-      <ThemeToggle />
 
       <StoryReveal isOpen={isStoryOpen} onClose={() => setIsStoryOpen(false)} />
 
       <header className="hero">
         <div className="hero-editorial">
-          {/* Left: Massive Name */}
+          {/* Left: Name with character-by-character reveal */}
           <motion.div
             className="hero-left"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.05 } },
+            }}
           >
             <h1 className="hero-name">
-              Raj
+              <AnimatedName text="Raj" />
               <br />
-              <span className="gradient-text">Koli</span>
+              <span className="gradient-text">
+                <AnimatedName text="Koli" />
+              </span>
             </h1>
           </motion.div>
 
-          {/* Right: Bio & Details */}
+          {/* Right: Bio & Details — staggered cascade */}
           <motion.div
             className="hero-right"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  delayChildren: 0.45,
+                  staggerChildren: 0.12,
+                },
+              },
+            }}
           >
-            <div className="hero-badge">
-              <Sparkles size={14} />
-              <span>Available for new systems</span>
-            </div>
+            <motion.div
+              className="hero-badge"
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+              }}
+            >
+              <Sparkles size={12} />
+              <span>Open to new opportunities</span>
+            </motion.div>
 
-            <p className="hero-role">Software Engineer</p>
+            <motion.p
+              className="hero-role"
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+              }}
+            >
+              Full-Stack Software Engineer
+            </motion.p>
 
-            <p className="hero-bio">
-              Specializing in full-stack JavaScript systems, API integrations, and AI-assisted tooling. Building scalable web platforms with a focus on clean architecture.
-            </p>
+            <motion.p
+              className="hero-bio"
+              variants={{
+                hidden: { opacity: 0, y: 16 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+              }}
+            >
+              I build scalable web applications and AI-powered tools that transform complex ideas into <strong>fast, reliable products</strong>. My focus is clean architecture, performance, and seamless user experiences.
+            </motion.p>
 
-            <div className="skill-pills">
-              {['TypeScript', 'React', 'Node.js', 'Next.js', 'Python', 'MongoDB'].map(skill => (
-                <span key={skill} className="skill-pill">{skill}</span>
+            <motion.div
+              className="skill-pills"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.06 } },
+              }}
+            >
+              {['React', 'Next.js', 'Node.js', 'TypeScript', 'MongoDB', 'Python'].map(skill => (
+                <motion.span
+                  key={skill}
+                  className="skill-pill"
+                  variants={{
+                    hidden: { opacity: 0, y: 10, scale: 0.9 },
+                    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+                  }}
+                >
+                  {skill}
+                </motion.span>
               ))}
-            </div>
+            </motion.div>
 
-            <div className="hero-links">
-              <a href="https://github.com/Rajkoli145" target="_blank" rel="noopener noreferrer" className="hero-social-link">
-                <Github size={18} />
-              </a>
-              <a href="https://www.linkedin.com/in/raj-koli-626008318/" target="_blank" rel="noopener noreferrer" className="hero-social-link">
-                <Linkedin size={18} />
-              </a>
-              <a href="mailto:koliraj911@gmail.com" className="hero-social-link">
-                <Mail size={18} />
-              </a>
-            </div>
+            <motion.div
+              className="hero-links"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.08 } },
+              }}
+            >
+              {[
+                { href: "https://github.com/Rajkoli145", icon: <Github size={14} />, label: "GitHub" },
+                { href: "https://www.linkedin.com/in/raj-koli-626008318/", icon: <Linkedin size={14} />, label: "LinkedIn" },
+                { href: "/Rajkoli_CV.pdf", icon: <FileText size={14} />, label: "Resume" },
+                { href: "mailto:koliraj911@gmail.com", icon: <Mail size={14} />, label: "Email" },
+              ].map(link => (
+                <motion.a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith('mailto') ? undefined : "_blank"}
+                  rel={link.href.startsWith('mailto') ? undefined : "noopener noreferrer"}
+                  className="hero-social-link"
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+                  }}
+                >
+                  {link.icon}
+                  <span>{link.label}</span>
+                </motion.a>
+              ))}
+            </motion.div>
           </motion.div>
         </div>
 
@@ -88,7 +178,7 @@ function App() {
           className="scroll-indicator"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
+          transition={{ delay: 1.8, duration: 1 }}
         >
           <div className="mouse"></div>
         </motion.div>
@@ -97,7 +187,7 @@ function App() {
       <main className="container">
 
         {/* Experience */}
-        <Section title="Experience" delay={0.1}>
+        <Section title="Experience" delay={0.1} id="experience">
           <div className="experience-list">
             <div className="glass experience-card">
               <div className="experience-header">
@@ -147,7 +237,7 @@ function App() {
         </Section>
 
         {/* Projects */}
-        <Section title="Selected Projects" delay={0.1}>
+        <Section title="Selected Projects" delay={0.1} id="projects">
           <div className="projects-grid">
             <ProjectCard
               title="FreelancerFlow"
@@ -193,7 +283,7 @@ function App() {
         </Section>
 
         {/* Philosophy */}
-        <Section title="Philosophy" delay={0.2}>
+        <Section title="Philosophy" delay={0.2} id="about">
           <p>
             I believe that code is a notebook for thought. Every repository represents something I learned through struggle. My philosophy is simple:
           </p>

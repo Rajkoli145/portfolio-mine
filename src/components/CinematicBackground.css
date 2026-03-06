@@ -5,19 +5,17 @@
     width: 100%;
     height: 100%;
     z-index: 0;
-    background-color: var(--bg-color);
+    background-color: #0a0a0a;
     overflow: hidden;
     transition: background-color 0.5s ease-in-out;
     pointer-events: none;
 }
 
-/* Dark mode: rich radial gradients matching the vellum reference */
+/* Dark mode: pure black, no colored gradients */
 [data-theme='dark'] .cinematic-bg,
 :root:not([data-theme='light']) .cinematic-bg {
-    background-image:
-        radial-gradient(at 0% 0%, hsla(253, 16%, 12%, 1) 0, transparent 50%),
-        radial-gradient(at 50% 0%, hsla(225, 39%, 25%, 0.6) 0, transparent 50%),
-        radial-gradient(at 100% 0%, hsla(339, 49%, 20%, 0.4) 0, transparent 50%);
+    background-color: #0a0a0a;
+    background-image: none;
 }
 
 /* Light mode: clean neutral */
@@ -31,7 +29,7 @@
 }
 
 [data-theme='dark'] {
-    --vignette-color: rgba(0, 0, 0, 0.6);
+    --vignette-color: rgba(0, 0, 0, 0.5);
 }
 
 /* Vellum Grain Overlay — SVG feTurbulence */
@@ -42,7 +40,7 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: 0.35;
+    opacity: 0.3;
     z-index: 5;
     mix-blend-mode: overlay;
 }
@@ -60,4 +58,14 @@
     z-index: 4;
     background: radial-gradient(circle at center, transparent 30%, var(--vignette-color) 100%);
     pointer-events: none;
+}
+
+/* Hide ambient orbs — pure black bg */
+.ambient-orb {
+    display: none;
+}
+
+/* Hide hero gradient lighting — spotlight only */
+.hero-light-gradient {
+    display: none;
 }

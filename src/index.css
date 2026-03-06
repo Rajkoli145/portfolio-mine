@@ -203,9 +203,11 @@ hr {
    Theme Toggle
    ═══════════════════════════════════════════ */
 .theme-toggle {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
+  position: relative;
+  /* top: 1.5rem; */
+  /* Removed as it's now in the navbar */
+  /* right: 1.5rem; */
+  /* Removed */
   z-index: 1000;
   width: 48px;
   height: 48px;
@@ -262,11 +264,37 @@ hr {
   transition: opacity 0.3s ease;
 }
 
+.cursor-spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+  /* Above cinematic background, but below content containers (z-index 20) */
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.7);
+  /* Base darkness */
+  will-change: background;
+}
+
+[data-theme='light'] .cursor-spotlight {
+  display: none;
+}
+
 .cursor-outer {
   position: fixed;
+  top: 0;
+  left: 0;
   pointer-events: none;
-  border: 1.5px solid var(--accent-primary);
+  border: 1.2px solid var(--accent-primary);
   border-radius: 50%;
+  will-change: transform, width, height, box-shadow;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .cursor-inner {
@@ -277,6 +305,7 @@ hr {
   background-color: var(--accent-primary);
   border-radius: 50%;
   z-index: 100000;
+  will-change: transform;
 }
 
 /* ═══════════════════════════════════════════

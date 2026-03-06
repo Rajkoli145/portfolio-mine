@@ -7,9 +7,8 @@ export const ThemeToggle = () => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('theme');
             if (saved) return saved as 'light' | 'dark';
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        return 'light';
+        return 'dark';
     });
 
     useEffect(() => {
