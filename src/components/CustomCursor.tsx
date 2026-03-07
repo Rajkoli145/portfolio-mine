@@ -111,7 +111,17 @@ export const CustomCursor = () => {
                     rgba(0, 0, 0, ${darkness}) 70%
                 )`;
             } else {
-                spotlight.style.background = 'none';
+                spotlightPos.current.x = lerp(spotlightPos.current.x, mx, 0.08);
+                spotlightPos.current.y = lerp(spotlightPos.current.y, my, 0.08);
+
+                const radius = isHovering.current ? 350 : 300;
+                const opacity = 0.12;
+
+                spotlight.style.background = `radial-gradient(
+                    ${radius}px circle at ${spotlightPos.current.x}px ${spotlightPos.current.y}px,
+                    rgba(143, 168, 255, ${opacity}),
+                    transparent 70%
+                )`;
             }
 
             rafId.current = requestAnimationFrame(animate);

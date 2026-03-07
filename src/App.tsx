@@ -17,6 +17,8 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { Section, ProjectCard, CustomCursor, StoryReveal, CinematicBackground, Navbar } from './components';
+import ShinyText from './components/react-bits/ShinyText';
+import StarBorder from './components/react-bits/StarBorder';
 import './App.css';
 
 /* Character-by-character reveal helper */
@@ -129,16 +131,20 @@ function App() {
               }}
             >
               {['React', 'Next.js', 'Node.js', 'TypeScript', 'MongoDB', 'Python'].map(skill => (
-                <motion.span
+                <StarBorder
                   key={skill}
+                  as={motion.div}
                   className="skill-pill"
+                  color="rgba(168, 139, 255, 0.5)"
+                  speed="5s"
+                  thickness={1}
                   variants={{
                     hidden: { opacity: 0, y: 10, scale: 0.9 },
                     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
                   }}
                 >
                   {skill}
-                </motion.span>
+                </StarBorder>
               ))}
             </motion.div>
 
@@ -155,20 +161,27 @@ function App() {
                 { href: "/Rajkoli_CV.pdf", icon: <FileText size={14} />, label: "Resume" },
                 { href: "mailto:koliraj911@gmail.com", icon: <Mail size={14} />, label: "Email" },
               ].map(link => (
-                <motion.a
+                <motion.div
                   key={link.label}
-                  href={link.href}
-                  target={link.href.startsWith('mailto') ? undefined : "_blank"}
-                  rel={link.href.startsWith('mailto') ? undefined : "noopener noreferrer"}
-                  className="hero-social-link"
                   variants={{
                     hidden: { opacity: 0, y: 8 },
                     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
                   }}
                 >
-                  {link.icon}
-                  <span>{link.label}</span>
-                </motion.a>
+                  <StarBorder
+                    as="a"
+                    href={link.href}
+                    target={link.href.startsWith('mailto') ? undefined : "_blank"}
+                    rel={link.href.startsWith('mailto') ? undefined : "noopener noreferrer"}
+                    className="hero-social-link"
+                    color="rgba(143, 168, 255, 0.5)"
+                    speed="4s"
+                    thickness={1}
+                  >
+                    {link.icon}
+                    <span>{link.label}</span>
+                  </StarBorder>
+                </motion.div>
               ))}
             </motion.div>
           </motion.div>
@@ -276,7 +289,9 @@ function App() {
               <div className="story-teaser-text">
                 <h3 className="gradient-text">Interested in the journey?</h3>
                 <p>From cloning apps to systems thinking — discover the story behind the code.</p>
-                <span className="teaser-btn">Read My Story</span>
+                <span className="teaser-btn">
+                  <ShinyText text="Read My Story" speed={3} color="rgba(143, 168, 255, 0.7)" shineColor="#ffffff" />
+                </span>
               </div>
             </div>
           </div>

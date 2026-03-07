@@ -99,6 +99,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background-color: var(--bg-color);
+  background: radial-gradient(circle at 50% 0%, rgba(143, 168, 255, 0.08), transparent 60%), var(--bg-color);
   transition: background-color 0.5s ease-in-out;
 }
 
@@ -279,7 +280,8 @@ hr {
 }
 
 [data-theme='light'] .cursor-spotlight {
-  display: none;
+  background: rgba(255, 255, 255, 0.05);
+  /* Softer base in light mode */
 }
 
 .cursor-outer {
