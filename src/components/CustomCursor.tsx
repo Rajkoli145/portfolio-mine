@@ -101,7 +101,7 @@ export const CustomCursor = () => {
                 spotlightPos.current.x = lerp(spotlightPos.current.x, mx, 0.08);
                 spotlightPos.current.y = lerp(spotlightPos.current.y, my, 0.08);
 
-                const radius = isHovering.current ? 400 : 350;
+                const radius = isHovering.current ? 500 : 450;
                 const darkness = 0.8; // How dark the rest of the screen is
 
                 spotlight.style.background = `radial-gradient(
