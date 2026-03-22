@@ -10,8 +10,9 @@ export const Navbar = () => {
     const [activeSection, setActiveSection] = useState<string | null>(null);
 
     const navLinks = [
-        { label: 'Experience', href: '#experience', id: 'experience' },
         { label: 'Projects', href: '#projects', id: 'projects' },
+        { label: 'Experience', href: '#experience', id: 'experience' },
+        { label: 'Skills', href: '#skills', id: 'skills' },
         { label: 'About', href: '#about', id: 'about' },
         { label: 'Contact', href: '#contact', id: 'contact' },
     ];

@@ -1,3 +1,12 @@
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+section {
+  scroll-snap-align: start;
+}
+
 :root {
   /* Vellum Design Tokens - Light Mode */
   --bg-color: #f0f0f0;
@@ -97,7 +106,6 @@
 
 body {
   min-height: 100vh;
-  overflow-x: hidden;
   background-color: var(--bg-color);
   background: radial-gradient(circle at 50% 0%, rgba(143, 168, 255, 0.08), transparent 60%), var(--bg-color);
   transition: background-color 0.5s ease-in-out;

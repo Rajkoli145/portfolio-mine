@@ -9,6 +9,8 @@ export const CustomCursor = () => {
     const innerRef = useRef<HTMLDivElement>(null);
     const spotlightRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const scrollY = useRef(0);
+    const currentOpacity = useRef(1);
 
     // Track raw mouse position
     const mouse = useRef({ x: -100, y: -100 });
@@ -38,6 +40,10 @@ export const CustomCursor = () => {
             mouse.current.x = e.clientX;
             mouse.current.y = e.clientY;
             container.style.opacity = '1';
+        };
+
+        const onScroll = () => {
+            scrollY.current = window.scrollY;
         };
 
         const onMouseOver = (e: MouseEvent) => {
@@ -124,6 +130,26 @@ export const CustomCursor = () => {
                 )`;
             }
 
+            // ---- SCROLL FADE LOGIC ----
+            // Fade out as we scroll down from the landing page
+            // Keep it 100% visible for the first few pixels of scroll for "early" feel
+            const threshold = window.innerHeight;
+            const targetOpacity = scrollY.current < threshold ? 1 - (scrollY.current / threshold) : 0;
+            
+            // Smoothly lerp towards target opacity
+            currentOpacity.current = lerp(currentOpacity.current, targetOpacity, 0.1);
+            
+            if (currentOpacity.current >= 0.99) {
+                spotlight.style.opacity = '1';
+                spotlight.style.visibility = 'visible';
+            } else if (currentOpacity.current <= 0.01) {
+                spotlight.style.opacity = '0';
+                spotlight.style.visibility = 'hidden';
+            } else {
+                spotlight.style.opacity = currentOpacity.current.toString();
+                spotlight.style.visibility = 'visible';
+            }
+
             rafId.current = requestAnimationFrame(animate);
         };
 
@@ -133,6 +159,7 @@ export const CustomCursor = () => {
         // Attach listeners
         window.addEventListener('mousemove', onMouseMove, { passive: true });
         window.addEventListener('mouseover', onMouseOver, { passive: true });
+        window.addEventListener('scroll', onScroll, { passive: true });
         document.addEventListener('mouseleave', onMouseLeave);
         document.addEventListener('mouseenter', onMouseEnter);
 
@@ -140,6 +167,7 @@ export const CustomCursor = () => {
             cancelAnimationFrame(rafId.current);
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseover', onMouseOver);
+            window.removeEventListener('scroll', onScroll);
             document.removeEventListener('mouseleave', onMouseLeave);
             document.removeEventListener('mouseenter', onMouseEnter);
         };

@@ -1,4 +1,5 @@
-import { motion, useSpring } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence, useSpring } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { ExternalLink, Github } from 'lucide-react';
 import SpotlightCard from './react-bits/SpotlightCard';
@@ -7,23 +8,28 @@ interface ProjectCardProps {
     title: string;
     description: string;
     tags: string[];
+    imageUrl?: string;
     githubUrl?: string;
     liveUrl?: string;
     icon?: ReactNode;
     delay?: number;
+    onClick?: () => void;
 }
 
 export const ProjectCard = ({
     title,
     description,
     tags,
+    imageUrl,
     githubUrl,
     liveUrl,
     icon,
-    delay = 0
+    delay = 0,
+    onClick,
 }: ProjectCardProps) => {
     const rotateX = useSpring(0, { stiffness: 150, damping: 20 });
     const rotateY = useSpring(0, { stiffness: 150, damping: 20 });
+    const [isHovered, setIsHovered] = useState(false);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const rect = e.currentTarget.getBoundingClientRect();
@@ -38,91 +44,91 @@ export const ProjectCard = ({
     const handleMouseLeave = () => {
         rotateX.set(0);
         rotateY.set(0);
+        setIsHovered(false);
     };
 
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ y: -6 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay }}
             className="project-card-container"
-            style={{
-                perspective: '800px',
-            }}
+            onClick={onClick}
+            style={{ cursor: onClick ? 'pointer' : 'default' }}
+            onMouseEnter={() => setIsHovered(true)}
         >
             <SpotlightCard
                 className="glass project-card"
                 spotlightColor="rgba(143, 168, 255, 0.15)"
             >
-                <motion.div
-                    style={{
-                        padding: '2rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1rem',
-                        position: 'relative',
-                        rotateX,
-                        rotateY,
-                        transformStyle: 'preserve-3d',
-                        height: '100%',
-                    }}
+                <div 
+                    className="project-card-inner"
                     onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
                 >
-                    {/* Content */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
-                        <div style={{
-                            padding: '0.75rem',
-                            borderRadius: '16px',
-                            background: 'var(--accent-soft)',
-                            color: 'var(--accent-primary)',
-                        }}>
-                            {icon}
+                    {/* Thumbnail */}
+                    {imageUrl && (
+                        <div className="project-thumbnail-wrapper">
+                            <img src={imageUrl} alt={title} className="project-thumbnail" />
+                            <div className="project-thumbnail-overlay">
+                                <AnimatePresence>
+                                    {isHovered && (
+                                        <motion.div 
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="view-case-study"
+                                        >
+                                            View Case Study
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.75rem' }}>
-                            {githubUrl && (
-                                <a href={githubUrl} target="_blank" rel="noopener noreferrer"
-                                    style={{ padding: '0.5rem', borderRadius: '50%', transition: 'var(--transition-smooth)' }}>
-                                    <Github size={20} />
-                                </a>
-                            )}
-                            {liveUrl && (
-                                <a href={liveUrl} target="_blank" rel="noopener noreferrer"
-                                    style={{ padding: '0.5rem', borderRadius: '50%', transition: 'var(--transition-smooth)' }}>
-                                    <ExternalLink size={20} />
-                                </a>
-                            )}
+                    )}
+
+                    <motion.div
+                        className="project-content"
+                        style={{
+                            rotateX,
+                            rotateY,
+                            transformStyle: 'preserve-3d',
+                        }}
+                    >
+                        <div className="project-header">
+                            <div className="project-icon-box">
+                                {icon}
+                            </div>
+                            <div className="project-actions">
+                                {githubUrl && (
+                                    <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="project-action-btn github">
+                                        <Github size={18} />
+                                    </a>
+                                )}
+                                {liveUrl && (
+                                    <a href={liveUrl} target="_blank" rel="noopener noreferrer" className="project-action-btn live">
+                                        <ExternalLink size={18} />
+                                    </a>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                        <h3 style={{ marginBottom: '0.5rem' }}>{title}</h3>
-                        <p style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>{description}</p>
-                    </div>
+                        <div className="project-info">
+                            <h3>{title}</h3>
+                            <p>{description}</p>
+                        </div>
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: 'auto', position: 'relative', zIndex: 1 }}>
-                        {tags.map((tag) => (
-                            <span
-                                key={tag}
-                                style={{
-                                    fontFamily: 'var(--font-mono)',
-                                    fontSize: '0.65rem',
-                                    fontWeight: 500,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.1em',
-                                    padding: '0.35rem 0.75rem',
-                                    borderRadius: '8px',
-                                    background: 'var(--accent-soft)',
-                                    color: 'var(--accent-primary)',
-                                }}
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-                </motion.div>
+                        <div className="project-tags">
+                            {tags.map((tag) => (
+                                <span key={tag} className="project-tag">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
             </SpotlightCard>
         </motion.div>
     );
